@@ -1,6 +1,15 @@
----
+<div align="center">
+  <h1>🔒 C-Encrypted-Concurrent-Sockets</h1>
+  <p>
+    <img src="https://img.shields.io/badge/C-%2300599C.svg?style=for-the-badge&logo=c&logoColor=white" alt="C" />
+    <img src="https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black" alt="Linux" />
+    <img src="https://img.shields.io/badge/POSIX_Threads-4B0082?style=for-the-badge" alt="POSIX Threads" />
+    <img src="https://img.shields.io/badge/Socket_TCP-0078D4?style=for-the-badge" alt="TCP Sockets" />
+  </p>
+  <p><i>Un'applicazione client-server ad alta concorrenza con cifratura parallela</i></p>
+</div>
 
-# 🔒 C-Encrypted-Concurrent-Sockets
+---
 
 Questo progetto è un'applicazione client-server ad alta concorrenza sviluppata in C. Dimostra l'utilizzo avanzato di **socket TCP** per la comunicazione di rete, **pthreads** sia per l'elaborazione parallela che per la gestione multi-client, e **mutex** per la thread-safety.
 
@@ -19,13 +28,29 @@ L'applicazione permette a un client di leggere un file, cifrarlo parallelamente 
 
 ---
 
+## 📂 Struttura del Progetto
+
+```text
+C-Encrypted-Concurrent-Sockets/
+├── client.c       # Logica del client
+├── client.h       # Header del client
+├── server.c       # Core del server
+├── server.h       # Header del server
+├── funzioni.c     # Libreria condivisa (operazioni su file, networking, thread)
+├── funzioni.h     # Header della libreria condivisa
+├── f.txt          # File di testo di esempio per il test
+└── README.md      # Questo file
+```
+
+---
+
 ## 🧩 Architettura e Componenti Principali
 
 Il progetto è modulato su tre componenti principali (con i rispettivi header):
 
 * `client.c` / `client.h`: Gestisce la logica del client. Inizializza i parametri di connessione, gestisce la lettura del file, coordina i thread per la cifratura XOR, impacchetta i metadati (chiave, lunghezze) e li invia al server, mettendosi in attesa di un segnale di `ACK`.
 * `server.c` / `server.h`: Il core del server. Implementa un ciclo di ascolto continuo. Quando arriva una connessione, usa `accept_client` e delega la richiesta a `client_handler` tramite un nuovo thread. Si occupa infine di scrivere il risultato decifrato su un file di output generato dinamicamente (IP + Timestamp).
-* `funzioni.c` / `funzioni.h`: Una libreria condivisa potente che astrae la logica di base per client e server. Contiene le operazioni sui file (`file_open`, `file_get_text`), la suddivisione e parallelizzazione in blocchi (`create_blocks`, `thread_modify_blocks`), il reperimento dell'IP locale (`get_ip`), l'invio/ricezione sicura su socket (`send_arg`, `recive`) e la maschera dei segnali.
+* `funzioni.c` / `funzioni.h`: Una libreria condivisa potente che astrae la logica di base per client e server. Contiene le operazioni sui file (`file_open`, `file_close`), la suddivisione e parallelizzazione in blocchi (`create_blocks`, `thread_modify_blocks`), il reperimento dell'IP locale (`get_ip`), l'invio/ricezione sicura su socket (`send_arg`, `recive`) e la maschera dei segnali.
 
 ---
 
@@ -74,10 +99,10 @@ Il progetto è modulato su tre componenti principali (con i rispettivi header):
 
    ```sh
    # Compilazione Server
-   gcc src/funzioni.c src/server.c -o server -Wall -Wextra -pthread
+   gcc funzioni.c server.c -o server -Wall -Wextra -pthread
    
    # Compilazione Client
-   gcc src/funzioni.c src/client.c -o client -Wall -Wextra -pthread
+   gcc funzioni.c client.c -o client -Wall -Wextra -pthread
    ```
 
 
